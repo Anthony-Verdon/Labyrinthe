@@ -1,7 +1,10 @@
 import time
 import tkinter
 from PIL import ImageTk, Image
-import labyrintheCreation
+from labyrintheCreation import Labyrinthe,calcul
+from couleur import couleur
+import random
+
 #classe menu, se charge de la page menu
 class Menu:
     
@@ -100,23 +103,28 @@ class Menu:
     #commande du bouton " lancer U ", lance la fenêtre jeu et ferme la fenêtre menu
     def Commande1(self):
         
-        tableau=labyrintheCreation.Labyrinthe()
+        tableau=Labyrinthe()
         
         try:
             if int(self.NbTour)<0:
                 self.Erreur()
-            elif int(self.DelaiSec)<0:
+            elif float(self.DelaiSec)<0:
                 self.Erreur()
             else:
                 self.menu.destroy()#ferme la fenêtre menu
                 JeuVie=Jeu(tableau)#créer un objet de la classe jeu
-                JeuVie.lancerJeu(int(self.NbTour)+1,int(self.DelaiSec))#lance le jeu avec les informations de l'utilisateur
-            
+                JeuVie.lancerJeu(int(self.NbTour)+1,float(self.DelaiSec))#lance le jeu avec les informations de l'utilisateur
+         
         except AttributeError:#si attribut non conforme, on envoie une erreur
+            print("problème d'attribut")
             self.Erreur()   
             
         except ValueError:#si valeur non conforme, on envoie une erreur
-            self.Erreur()   
+            print("problème de valeur")
+            self.Erreur() 
+        except TypeError:#si valeur non conforme, on envoie une erreur
+            print("problème de type")
+            self.Erreur() 
     
     #commande du bouton " lancer Portail ", lance la fenêtre jeu et ferme la fenêtre menu
     def Commande2(self):
@@ -249,7 +257,6 @@ class Jeu:
         self.jeu.minsize(1920,1080)
         self.jeu.config(background="#EB9F1B")
         
-        
         #bouton Pause
         self.nbPause=1#créer une variable égal à 1 de base pour que le jeu soit en pause quand on lance le jeu
         self.img5 = ImageTk.PhotoImage(Image.open("PauseImageResize.png"))
@@ -257,18 +264,34 @@ class Jeu:
         self.Pause = tkinter.Button(self.jeu,image = self.img6,bg="#EB9F1B",command=self.etatBouton) 
         self.Pause.place(x=200,y=390)
         self.bouton.place(x=1300,y=25)
+        self.dico={}
         
-        #Update du tableau
-        for x in range(nombre_tours):
+        for x in range(len(self._tableau)):
+            for y in range(len(self._tableau[x])):
+                self.dico[self._tableau[x][y]]=couleur(self._tableau[x][y])
+        
+        self.dico[self._tableau[1][0]]=self.dico[self._tableau[1][0]]
+        self.dico[self._tableau[len(self._tableau[x])-2][len(self._tableau[x])-1]]=self.dico[self._tableau[len(self._tableau[x])-2][len(self._tableau[x])-2]]
+        self.dico[1]="silver"
+        self.liste=[]
+        x=0
+        self.AffichageTableau()
+        
+        while len(self.liste)!=2:
             self.compteur(x)
+            x+=1
+            self.tour()
             self.AffichageTableau()
-            self.tour(x)
+            
             if self.nbPause%2==1:#si la variable%2 == 1, on met en pause tant que c'est égal à 1
                 while self.nbPause%2==1:
                     self.jeu.update()
             else:
                 time.sleep(delai)
-            
+        self.EtatStable(x)
+        
+        self.cassageMur(10)
+    
         self.jeu.mainloop()
     
     #affiche le tableau 
@@ -277,19 +300,17 @@ class Jeu:
         tabFrame=[]#créer un 2nd tableau
         self.bigframe=tkinter.Frame(self.jeu,bd=10,relief=tkinter.SUNKEN)
         self.bigframe.pack(expand="yes")
+        
+            
         for x in range(len(self._tableau)):
             #creation et affichage de la nouvelle frame ( 1 par ligne du tableau )
             tabFrame.append(tkinter.Frame(self.bigframe))
             tabFrame[x].pack()
             for y in range(len(self._tableau[x])):
-                if self._tableau[x][y]==1:
-                    #si l'index est un 0, on affiche un carré noir
-                    label_title=tkinter.Label(tabFrame[x],text="11",font=("Courrier",5),bg="black",fg="black")
-                    label_title.pack(side="left")#pour que cela s'affiche en ligne
-                else:
-                    #sinon un carré blanc
-                    label_title=tkinter.Label(tabFrame[x],text="00",font=("Courrier",5),bg="white",fg="white")
-                    label_title.pack(side="left")
+                Couleur=self.dico[self._tableau[x][y]]
+                label_title=tkinter.Label(tabFrame[x],text="11",font=("Courrier",5),bg=Couleur,fg=Couleur)
+                label_title.pack(side="left")#pour que cela s'affiche en ligne
+                
             
         self.jeu.update()#permet de mettre à jour le tableau
     
@@ -298,22 +319,90 @@ class Jeu:
         self.bigframe.destroy()
         
     #met à jour le tableau
-    def tour(self,nombreTour):
-        #creation du tableau que l'on va faire évolué 
-        tab2 = [ line[:] for line in self._tableau]
-
-        #boucle de verification des valeurs + modification de tab2  
+    def tour(self,longueurLabyrinthe=25):
+        labyrinthe=self._tableau
+        x=random.randint(1,longueurLabyrinthe-2)#on prend un mur au pif
         
-                
-                
+        if x%2==0:
+            y=random.randint(1,longueurLabyrinthe-2)//2*2+1
+        else:
+            y=random.randint(2,longueurLabyrinthe-3)//2*2
+        
+        if labyrinthe[x][y]==1:
+            if x%2==0:
+                if labyrinthe[x-1][y]!=labyrinthe[x+1][y]:
+                    if labyrinthe[x-1][y]<labyrinthe[x+1][y]:
+                        
+                        labyrinthe[x][y]=labyrinthe[x+1][y]
+                        variableTemporaire=labyrinthe[x-1][y]
+                        for i in range(0,longueurLabyrinthe):
+                            for j in range (0,longueurLabyrinthe):
+                                if labyrinthe[i][j]==variableTemporaire:
+                                    labyrinthe[i][j]=labyrinthe[x+1][y]
+                    else:
+                        labyrinthe[x][y]=labyrinthe[x-1][y]
+                        variableTemporaire=labyrinthe[x+1][y]
+                        for i in range(0,longueurLabyrinthe):
+                            for j in range (0,longueurLabyrinthe):
+                                if labyrinthe[i][j]==variableTemporaire:
+                                    labyrinthe[i][j]=labyrinthe[x-1][y]
+                else:
+                    self.tour()
+        
+            else:
+                if labyrinthe[x][y-1]!=labyrinthe[x][y+1]:
+                    if labyrinthe[x][y-1]<labyrinthe[x][y+1]:
+                        
+                        labyrinthe[x][y]=labyrinthe[x][y+1]
+                        variableTemporaire=labyrinthe[x][y-1]
+                        for i in range(0,longueurLabyrinthe):
+                            for j in range (0,longueurLabyrinthe):
+                                if labyrinthe[i][j]==variableTemporaire:
+                                    labyrinthe[i][j]=labyrinthe[x][y+1]
+                    else:
+                        labyrinthe[x][y]=labyrinthe[x][y-1]
+                        variableTemporaire=labyrinthe[x][y+1]
+                        for i in range(0,longueurLabyrinthe):
+                            for j in range (0,longueurLabyrinthe):
+                                if labyrinthe[i][j]==variableTemporaire:
+                                    labyrinthe[i][j]=labyrinthe[x][y-1]
+                else:
+                    self.tour()
+            
+        self.liste=[]
+        for x in range(len(self._tableau)):
+            for y in range(len(self._tableau)):
+                if self._tableau[x][y] not in self.liste:
+                    if len(self.liste)>2:
+                        break
+                    self.liste.append(self._tableau[x][y])
+            if len(self.liste)>2:
+                        break
+        
+        return labyrinthe
+     
+    def cassageMur(self,z,longueurLabyrinthe=25):
+        
+        labyrinthe=self._tableau
+        while z!=0:
+            x=random.randint(1,longueurLabyrinthe-2)#on prend un mur au pif
+        
+            if x%2==0:
+                y=random.randint(1,longueurLabyrinthe-2)//2*2+1
+            else:
+                y=random.randint(2,longueurLabyrinthe-3)//2*2
+        
+            if labyrinthe[x][y]==1:
+                z-=1
+                if x%2==0:
+                    labyrinthe[x][y]=labyrinthe[x+1][y]
     
-        if self._tableau==tab2:
-            self.EtatStable(nombreTour)#vérifie que le tableau ne soit pas stable
-            self.jeu.mainloop()
-        else:      
-            self._tableau=tab2
-        return self._tableau
-       
+                else:
+                    labyrinthe[x][y]=labyrinthe[x][y+1]
+                self._tableau=labyrinthe
+                self.AffichageTableau()
+            
+        
     #compte et affiche le nombre de tours
     def compteur(self,x):
             self.frameCompteur.destroy()

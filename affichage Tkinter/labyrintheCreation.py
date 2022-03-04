@@ -25,7 +25,8 @@ def Labyrinthe():
      
     labyrinthe[1][0]=labyrinthe[1][1]#entree
     labyrinthe[longueurLabyrinthe-2][longueurLabyrinthe-1]=labyrinthe[longueurLabyrinthe-2][longueurLabyrinthe-2]#sortie
-    
+    return labyrinthe
+    """
     z=0
     while z!=2*calcul(longueurLabyrinthe):
         z+=1
@@ -89,7 +90,6 @@ def Labyrinthe():
     
             else:
                 labyrinthe[x][y]=labyrinthe[x][y+1]
-    
+   
         return labyrinthe#pour l'affichage dans tkinter
-
-print(2/100*calcul(25))
+    """

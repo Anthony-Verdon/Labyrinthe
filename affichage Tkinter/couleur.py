@@ -2,6 +2,7 @@ import random
 import conversion
 
 def couleur(a):#on prend notre nombre
+    
     a=list(str(a))#on le met en str puis en list
     if len(a)<9:
         while len(a)<9:#on rajoute des 0 avant le nombre pour qu'il soit sur 9 chiffres
@@ -52,7 +53,7 @@ def couleur(a):#on prend notre nombre
         B[2]=str(B[2])
         B=int(B[0]+B[1]+B[2])
     
-    print(R,G,B)
+    
     R=list(conversion.convertisseur(R))
     G=list(conversion.convertisseur(G))
     B=list(conversion.convertisseur(B))
