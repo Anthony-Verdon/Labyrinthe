@@ -186,7 +186,23 @@ class Jeu:
                     x+=1
                     self.tour(longueurLabyrinthe)
                     self.AffichageTableau()
-            
+             
+        self.compteurCassageMur=1#round(longueurLabyrinthe/5)          
+        for y in range(self.compteurCassageMur):
+            if self.fini==True:
+                self.cassageMur(longueurLabyrinthe)
+                x+=1
+            else:
+                if self.nbPause%2==1:#si la variable%2 == 1, on met en pause tant que c'est égal à 1
+                    while self.nbPause%2==1:
+                        self.jeu.update()
+                else:
+                    time.sleep(delai)
+                    self.compteur(x)
+                    x+=1
+                    self.cassageMur(longueurLabyrinthe)
+                    self.AffichageTableau()
+        
         self.AffichageTableau()
         self.EtatStable(x)
         
@@ -275,29 +291,29 @@ class Jeu:
                         break
         
         return labyrinthe
-    """
-    def cassageMur(self,z,longueurLabyrinthe=25):
+    
+    def cassageMur(self,longueurLabyrinthe):
         
         labyrinthe=self._tableau
-        while z!=0:
-            x=random.randint(1,longueurLabyrinthe-2)#on prend un mur au pif
+        x=random.randint(1,longueurLabyrinthe-2)#on prend un mur au pif
         
-            if x%2==0:
-                y=random.randint(1,longueurLabyrinthe-2)//2*2+1
-            else:
-                y=random.randint(2,longueurLabyrinthe-3)//2*2
+        if x%2==0:
+            y=random.randint(1,longueurLabyrinthe-2)//2*2+1
+        else:
+            y=random.randint(2,longueurLabyrinthe-3)//2*2
         
-            if labyrinthe[x][y]==1:
-                z-=1
+        if labyrinthe[x][y]==1:
                 if x%2==0:
                     labyrinthe[x][y]=labyrinthe[x+1][y]
     
                 else:
                     labyrinthe[x][y]=labyrinthe[x][y+1]
-                self._tableau=labyrinthe
-                self.AffichageTableau()
+                return labyrinthe
+        else:
+            self.cassageMur(longueurLabyrinthe)
+                
             
-    """   
+     
     #compte et affiche le nombre de tours
     def compteur(self,x):
             self.frameCompteur.destroy()
