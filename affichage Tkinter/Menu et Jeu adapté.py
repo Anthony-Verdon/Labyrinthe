@@ -4,7 +4,7 @@ from PIL import ImageTk, Image
 from labyrintheCreation import Labyrinthe
 from couleur import couleur
 import random
-
+from math import inf
 #classe menu, se charge de la page menu
 class Menu:
     
@@ -100,19 +100,18 @@ class Menu:
                 tableau=Labyrinthe(int(self.NbLongueur))
                 self.menu.destroy()#ferme la fenêtre menu
                 JeuVie=Jeu(tableau)#créer un objet de la classe jeu
-                JeuVie.lancerJeu(int(self.NbLongueur),float(self.DelaiSec))#lance le jeu avec les informations de l'utilisateur
-         
+                JeuVie.lancerJeu(int(self.NbLongueur)//2*2+1,float(self.DelaiSec))#lance le jeu avec les informations de l'utilisateur
+        
+        
         except AttributeError:#si attribut non conforme, on envoie une erreur
             print("problème d'attribut")
             self.Erreur()   
             
-        except ValueError:#si valeur non conforme, on envoie une erreur
-            print("problème de valeur")
-            self.Erreur() 
         
-    
         
-#message d'erreur
+            
+        
+    #message d'erreur
     def Erreur(self):
         MessageErreur=tkinter.Tk()
         MessageErreur.title("Erreur : informations manquantes")
@@ -187,7 +186,7 @@ class Jeu:
                     self.tour(longueurLabyrinthe)
                     self.AffichageTableau()
              
-        self.compteurCassageMur=1#round(longueurLabyrinthe/5)          
+        self.compteurCassageMur=round(longueurLabyrinthe/2.5)          
         for y in range(self.compteurCassageMur):
             if self.fini==True:
                 self.cassageMur(longueurLabyrinthe)
@@ -206,7 +205,16 @@ class Jeu:
         self.AffichageTableau()
         self.EtatStable(x)
         
-    
+        self.tableauResolution=[]
+        for x in range(longueurLabyrinthe):
+            self.tableauResolution.append([])
+            for y in range(longueurLabyrinthe):
+                if self._tableau[x][y]==1:
+                    self.tableauResolution[x].append(-1)
+                else:
+                    self.tableauResolution[x].append(inf)
+                    
+        self.resolutionLabyrinthe(longueurLabyrinthe-2,longueurLabyrinthe-1,0) 
         self.jeu.mainloop()
     
     #affiche le tableau 
@@ -312,8 +320,6 @@ class Jeu:
         else:
             self.cassageMur(longueurLabyrinthe)
                 
-            
-     
     #compte et affiche le nombre de tours
     def compteur(self,x):
             self.frameCompteur.destroy()
@@ -341,6 +347,30 @@ class Jeu:
     def Finir(self):
         self.fini=True
     
+    def resolutionLabyrinthe(self,coordonneeX,coordonneeY,nombre):
+        if (coordonneeX,coordonneeY)==(1,0):
+            print (self.tableauResolution)
+        else:
+            if self.tableauResolution[coordonneeX][coordonneeY]>nombre:
+                self.tableauResolution[coordonneeX][coordonneeY]=nombre
+            print((coordonneeX,coordonneeY))
+            if (coordonneeX,coordonneeY)==(len(self.tableauResolution)-2,len(self.tableauResolution)-1):
+                if self.tableauResolution[coordonneeX][coordonneeY-1]>self.tableauResolution[coordonneeX][coordonneeY] and self.tableauResolution[coordonneeX-1][coordonneeY-1]!=-1:
+                        return self.resolutionLabyrinthe(coordonneeX,coordonneeY-1,nombre+1)
+            else:
+                if self.tableauResolution[coordonneeX+1][coordonneeY]>self.tableauResolution[coordonneeX][coordonneeY] and self.tableauResolution[coordonneeX+1][coordonneeY]!=-1:
+                        return self.resolutionLabyrinthe(coordonneeX+1,coordonneeY,nombre+1)
+                if self.tableauResolution[coordonneeX-1][coordonneeY]>self.tableauResolution[coordonneeX][coordonneeY] and self.tableauResolution[coordonneeX-1][coordonneeY]!=-1:
+                        return self.resolutionLabyrinthe(coordonneeX-1,coordonneeY,nombre+1)
+                if self.tableauResolution[coordonneeX][coordonneeY+1]>self.tableauResolution[coordonneeX][coordonneeY] and self.tableauResolution[coordonneeX][coordonneeY+1]!=-1:
+                        return self.resolutionLabyrinthe(coordonneeX,coordonneeY+1,nombre+1)
+                if self.tableauResolution[coordonneeX][coordonneeY-1]>self.tableauResolution[coordonneeX][coordonneeY] and self.tableauResolution[coordonneeX][coordonneeY -1]!=-1:
+                        return self.resolutionLabyrinthe(coordonneeX,coordonneeY-1,nombre+1)
+                else:
+                    print("probleme")
+                    
+        
+        
     #quitte la fenêtre jeu et nous renvoie à la fenêtre menu
     def quitter(self):
         self.jeu.destroy()
