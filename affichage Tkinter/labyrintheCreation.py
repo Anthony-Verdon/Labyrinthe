@@ -3,11 +3,11 @@ import random
 def calcul(a):#calcul le nombre de 0 en fonction de la longueur du labyrinthe
     return a**2-(a**2-2*(a//2+1)*a+((a//2+1)**2)+2)
 
-def Labyrinthe():
-
+def Labyrinthe(longueurLabyrinthe):
+    
+    
     labyrinthe=[]
-
-    longueurLabyrinthe=25#longueur donne par l'utilisateur
+    #longueur donne par l'utilisateur
     longueurLabyrinthe=longueurLabyrinthe//2*2+1#on passe la longueur sur un chiffre impair pour pas de murs avec 2 epaisseurs en bas et à droite
     nombre=[x for x in range(2,calcul(longueurLabyrinthe)+2)]
     random.shuffle(nombre)
@@ -25,8 +25,77 @@ def Labyrinthe():
      
     labyrinthe[1][0]=labyrinthe[1][1]#entree
     labyrinthe[longueurLabyrinthe-2][longueurLabyrinthe-1]=labyrinthe[longueurLabyrinthe-2][longueurLabyrinthe-2]#sortie
+    
     return labyrinthe
-    """
+
+"""
+def fonctiontest():
+    liste=[]
+    labyrinthe=Labyrinthe()
+    longueurLabyrinthe=len(labyrinthe)
+    compteur=0
+    while len(liste)!=2:
+        compteur+=1
+        x=random.randint(1,longueurLabyrinthe-2)#on prend un mur au pif
+        
+        if x%2==0:
+            y=random.randint(1,longueurLabyrinthe-2)//2*2+1
+        else:
+            y=random.randint(2,longueurLabyrinthe-3)//2*2
+        
+        if labyrinthe[x][y]==1:
+            if x%2==0:
+                if labyrinthe[x-1][y]!=labyrinthe[x+1][y]:
+                    if labyrinthe[x-1][y]<labyrinthe[x+1][y]:
+                        
+                        labyrinthe[x][y]=labyrinthe[x+1][y]
+                        variableTemporaire=labyrinthe[x-1][y]
+                        for i in range(0,longueurLabyrinthe):
+                            for j in range (0,longueurLabyrinthe):
+                                if labyrinthe[i][j]==variableTemporaire:
+                                    labyrinthe[i][j]=labyrinthe[x+1][y]
+                    else:
+                        labyrinthe[x][y]=labyrinthe[x-1][y]
+                        variableTemporaire=labyrinthe[x+1][y]
+                        for i in range(0,longueurLabyrinthe):
+                            for j in range (0,longueurLabyrinthe):
+                                if labyrinthe[i][j]==variableTemporaire:
+                                    labyrinthe[i][j]=labyrinthe[x-1][y]
+                
+        
+            else:
+                if labyrinthe[x][y-1]!=labyrinthe[x][y+1]:
+                    if labyrinthe[x][y-1]<labyrinthe[x][y+1]:
+                        
+                        labyrinthe[x][y]=labyrinthe[x][y+1]
+                        variableTemporaire=labyrinthe[x][y-1]
+                        for i in range(0,longueurLabyrinthe):
+                            for j in range (0,longueurLabyrinthe):
+                                if labyrinthe[i][j]==variableTemporaire:
+                                    labyrinthe[i][j]=labyrinthe[x][y+1]
+                    else:
+                        labyrinthe[x][y]=labyrinthe[x][y-1]
+                        variableTemporaire=labyrinthe[x][y+1]
+                        for i in range(0,longueurLabyrinthe):
+                            for j in range (0,longueurLabyrinthe):
+                                if labyrinthe[i][j]==variableTemporaire:
+                                    labyrinthe[i][j]=labyrinthe[x][y-1]
+                
+        liste=[]
+        for x in range(len(labyrinthe)):
+            for y in range(len(labyrinthe)):
+                if labyrinthe[x][y] not in liste:
+                    if len(liste)>2:
+                        break
+                    liste.append(labyrinthe[x][y])
+            if len(liste)>2:
+                        break
+                    
+    return compteur
+
+print(fonctiontest())
+"""
+"""
     z=0
     while z!=2*calcul(longueurLabyrinthe):
         z+=1

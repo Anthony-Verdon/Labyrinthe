@@ -1,7 +1,7 @@
 import time
 import tkinter
 from PIL import ImageTk, Image
-from labyrintheCreation import Labyrinthe,calcul
+from labyrintheCreation import Labyrinthe
 from couleur import couleur
 import random
 
@@ -17,8 +17,6 @@ class Menu:
         self.frameInput=tkinter.Frame(bg="#EB9F1B")#créer la frame Input
         
         self.boutonTab1=tkinter.Button(self.frameBouton,text="lancer U",font=("Kokonor",20),bg="#EB9F1B",command=self.Commande1)#créer le 1er bouton " lancer U "
-        self.boutonTab2=tkinter.Button(self.frameBouton,text="lancer Portail",font=("Kokonor",20),bg="#EB9F1B",command=self.Commande2)#créer le 2nd bouton " lancer Portail "
-        self.boutonTab3=tkinter.Button(self.frameBouton,text="lancer Planeur",font=("Kokonor",20),bg="#EB9F1B",command=self.Commande3)#créer le 3ème bouton " lancer Planeur "
         self.boutonQuitter=tkinter.Button(self.menu,text="quitter",font=("Kokonor",20),bg="#EB9F1B",command=self.quitter)#créer le 4ème bouton " Quitter "
         self.boutonInput=tkinter.Button(self.frameInput,text="envoyer les informations",font=("Kokonor",20),bg="#EB9F1B",command=self.InputUtilisateur)#créer le 5ème bouton " envoyer les informations
         
@@ -34,24 +32,16 @@ class Menu:
         panel1 = tkinter.Label(self.frameImage, image = img1)#créer un label à partir de l'image et la place dans la frame image
         panel1.pack(side="left",padx=10)#affiche le label en la collant à gauche de la frame et en lui ajoutant une marge externe à droite et à gauche
         
-        img2 = ImageTk.PhotoImage(Image.open("PortailResize.jpg"))
-        panel2 = tkinter.Label(self.frameImage, image = img2,bg="#EB9F1B")
-        panel2.pack(side="left",padx=10)
-        
-        img3 = ImageTk.PhotoImage(Image.open("PlaneurResize.jpg"))
-        panel3 = tkinter.Label(self.frameImage, image = img3)
-        panel3.pack(side="left",padx=10)
-        
         img4 = ImageTk.PhotoImage(Image.open("PointInterrogation.png"))
         panel4 = tkinter.Button(self.menu, image = img4,bg="#EB9F1B",command=self.PointInterrogation)#créer un bouton à partir de l'image 
         panel4.place(x=1325,y=25)#place le bouton à des coordonnées précises
         
         self.frameImage.pack(expand="yes")#affiche et centre la frame image
         
-        self.InputTour=tkinter.Entry(self.frameInput,font=("Kokonor",20))#créer un input 
-        self.InputTour.insert(0,"écrire le nombre de tour")#le placeholder de l'input
-        self.InputTour.bind('<FocusIn>', self.removeTour)#si on clique dessus, lance la fonction removeTour
-        self.InputTour.pack(pady=10)#affiche l'input avec une marge externe en haut et en bas
+        self.InputLongueur=tkinter.Entry(self.frameInput,font=("Kokonor",20))#créer un input 
+        self.InputLongueur.insert(0,"écrire le nombre de tour")#le placeholder de l'input
+        self.InputLongueur.bind('<FocusIn>', self.removeTour)#si on clique dessus, lance la fonction removeTour
+        self.InputLongueur.pack(pady=10)#affiche l'input avec une marge externe en haut et en bas
         
         self.InputDelai=tkinter.Entry(self.frameInput,font=("Kokonor",20))
         self.InputDelai.insert(0,"écrire le temps de delai")
@@ -62,8 +52,6 @@ class Menu:
         self.frameInput.place(x=1200,y=540)
         
         self.boutonTab1.pack(side="left",padx=10)
-        self.boutonTab2.pack(side="left",padx=10)
-        self.boutonTab3.pack(side="left",padx=10)
         
         self.frameBouton.pack(expand="yes")
         
@@ -73,13 +61,13 @@ class Menu:
     
     #commande du bouton " Envoyer les informations ",récupère les informations envoyé par l'utilisateur
     def InputUtilisateur(self):
-        self.NbTour=self.InputTour.get()#reçoit les informations données par l'utilisateur pour pouvoir les utiliser afin de lancer le jeu
+        self.NbLongueur=self.InputLongueur.get()#reçoit les informations données par l'utilisateur pour pouvoir les utiliser afin de lancer le jeu
         self.DelaiSec=self.InputDelai.get()
-        return self.NbTour,self.DelaiSec
+        return self.NbLongueur,self.DelaiSec
        
     #commande qui supprime le placeholder dans l'entree tour
     def removeTour(self,event):
-        self.InputTour.delete(0, tkinter.END)#supprime le texte, appelez placeholder, qui est afficher dans l'input quand on clique dessus
+        self.InputLongueur.delete(0, tkinter.END)#supprime le texte, appelez placeholder, qui est afficher dans l'input quand on clique dessus
         
     #commande qui supprime le placeholder dans l'entree delai
     def removeDelai(self,event):
@@ -103,17 +91,16 @@ class Menu:
     #commande du bouton " lancer U ", lance la fenêtre jeu et ferme la fenêtre menu
     def Commande1(self):
         
-        tableau=Labyrinthe()
-        
         try:
-            if int(self.NbTour)<0:
+            if int(self.NbLongueur)<0:
                 self.Erreur()
             elif float(self.DelaiSec)<0:
                 self.Erreur()
             else:
+                tableau=Labyrinthe(int(self.NbLongueur))
                 self.menu.destroy()#ferme la fenêtre menu
                 JeuVie=Jeu(tableau)#créer un objet de la classe jeu
-                JeuVie.lancerJeu(int(self.NbTour)+1,float(self.DelaiSec))#lance le jeu avec les informations de l'utilisateur
+                JeuVie.lancerJeu(int(self.NbLongueur),float(self.DelaiSec))#lance le jeu avec les informations de l'utilisateur
          
         except AttributeError:#si attribut non conforme, on envoie une erreur
             print("problème d'attribut")
@@ -122,110 +109,9 @@ class Menu:
         except ValueError:#si valeur non conforme, on envoie une erreur
             print("problème de valeur")
             self.Erreur() 
-        except TypeError:#si valeur non conforme, on envoie une erreur
-            print("problème de type")
-            self.Erreur() 
+        
     
-    #commande du bouton " lancer Portail ", lance la fenêtre jeu et ferme la fenêtre menu
-    def Commande2(self):
         
-        tableau=[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-        
-        try:
-            if int(self.NbTour)<0:
-                self.Erreur()
-            elif int(self.DelaiSec)<0:
-                self.Erreur()
-            else:
-                self.menu.destroy()#ferme la fenêtre menu
-                JeuVie=Jeu(tableau)#créer un objet de la classe jeu
-                JeuVie.lancerJeu(int(self.NbTour)+1,int(self.DelaiSec))#lance le jeu avec les informations de l'utilisateur
-            
-        except AttributeError:#si attribut non conforme, on envoie une erreur
-            self.Erreur()   
-            
-        except ValueError:#si valeur non conforme, on envoie une erreur
-            self.Erreur()   
-            
-    #commande du bouton " lancer Planeur ", lance la fenêtre jeu et ferme la fenêtre menu
-    def Commande3(self):
-        
-        tableau=[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-        
-        try:
-            if int(self.NbTour)<0:
-                self.Erreur()
-            elif int(self.DelaiSec)<0:
-                self.Erreur()
-            else:
-                self.menu.destroy()#ferme la fenêtre menu
-                JeuVie=Jeu(tableau)#créer un objet de la classe jeu
-                JeuVie.lancerJeu(int(self.NbTour)+1,int(self.DelaiSec))#lance le jeu avec les informations de l'utilisateur
-            
-        except AttributeError:#si attribut non conforme, on envoie une erreur
-            self.Erreur()   
-            
-        except ValueError:#si valeur non conforme, on envoie une erreur
-            self.Erreur()    
-            
 #message d'erreur
     def Erreur(self):
         MessageErreur=tkinter.Tk()
@@ -249,13 +135,14 @@ class Jeu:
         self.bouton=tkinter.Button(self.jeu,text="revenir au menu",font=("Kokonor",20),bg="#EB9F1B",command=self.quitter) 
         
     #gère l'affichage de la page jeu
-    def lancerJeu(self,nombre_tours,delai):
+    def lancerJeu(self,longueurLabyrinthe,delai):
         
         self.jeu.title("Jeu de la Vie")
         self.jeu.geometry("1920x1080")
         self.jeu.iconbitmap("logo.ico")
         self.jeu.minsize(1920,1080)
         self.jeu.config(background="#EB9F1B")
+        self.bouton.place(x=1300,y=25)
         
         #bouton Pause
         self.nbPause=1#créer une variable égal à 1 de base pour que le jeu soit en pause quand on lance le jeu
@@ -263,7 +150,14 @@ class Jeu:
         self.img6 = ImageTk.PhotoImage(Image.open("PlayImageResize.png"))
         self.Pause = tkinter.Button(self.jeu,image = self.img6,bg="#EB9F1B",command=self.etatBouton) 
         self.Pause.place(x=200,y=390)
-        self.bouton.place(x=1300,y=25)
+        
+        
+        #bouton Finir
+        self.finir = tkinter.Button(self.jeu,text="finir",font=("Kokonor",20),bg="#EB9F1B",command=self.Finir) 
+        self.fini=False
+        self.finir.place(x=200,y=700)
+        
+        
         self.dico={}
         
         for x in range(len(self._tableau)):
@@ -273,24 +167,29 @@ class Jeu:
         self.dico[self._tableau[1][0]]=self.dico[self._tableau[1][0]]
         self.dico[self._tableau[len(self._tableau[x])-2][len(self._tableau[x])-1]]=self.dico[self._tableau[len(self._tableau[x])-2][len(self._tableau[x])-2]]
         self.dico[1]="silver"
+        
         self.liste=[]
         x=0
         self.AffichageTableau()
         
         while len(self.liste)!=2:
-            self.compteur(x)
-            x+=1
-            self.tour()
-            self.AffichageTableau()
-            
-            if self.nbPause%2==1:#si la variable%2 == 1, on met en pause tant que c'est égal à 1
-                while self.nbPause%2==1:
-                    self.jeu.update()
+            if self.fini==True:
+                self.tour(longueurLabyrinthe)
+                x+=1
             else:
-                time.sleep(delai)
+                if self.nbPause%2==1:#si la variable%2 == 1, on met en pause tant que c'est égal à 1
+                    while self.nbPause%2==1:
+                        self.jeu.update()
+                else:
+                    time.sleep(delai)
+                    self.compteur(x)
+                    x+=1
+                    self.tour(longueurLabyrinthe)
+                    self.AffichageTableau()
+            
+        self.AffichageTableau()
         self.EtatStable(x)
         
-        self.cassageMur(10)
     
         self.jeu.mainloop()
     
@@ -301,7 +200,6 @@ class Jeu:
         self.bigframe=tkinter.Frame(self.jeu,bd=10,relief=tkinter.SUNKEN)
         self.bigframe.pack(expand="yes")
         
-            
         for x in range(len(self._tableau)):
             #creation et affichage de la nouvelle frame ( 1 par ligne du tableau )
             tabFrame.append(tkinter.Frame(self.bigframe))
@@ -310,8 +208,7 @@ class Jeu:
                 Couleur=self.dico[self._tableau[x][y]]
                 label_title=tkinter.Label(tabFrame[x],text="11",font=("Courrier",5),bg=Couleur,fg=Couleur)
                 label_title.pack(side="left")#pour que cela s'affiche en ligne
-                
-            
+                  
         self.jeu.update()#permet de mettre à jour le tableau
     
     #supprime le tableau
@@ -319,56 +216,54 @@ class Jeu:
         self.bigframe.destroy()
         
     #met à jour le tableau
-    def tour(self,longueurLabyrinthe=25):
+    def tour(self,longueurLabyrinthe):
         labyrinthe=self._tableau
-        x=random.randint(1,longueurLabyrinthe-2)#on prend un mur au pif
-        
+        x=random.randint(1,len(self._tableau)-2)#on prend un mur au pif
         if x%2==0:
-            y=random.randint(1,longueurLabyrinthe-2)//2*2+1
+            y=random.randint(1,len(self._tableau)-2)//2*2+1
         else:
-            y=random.randint(2,longueurLabyrinthe-3)//2*2
+            y=random.randint(2,len(self._tableau) -3)//2*2
         
         if labyrinthe[x][y]==1:
             if x%2==0:
                 if labyrinthe[x-1][y]!=labyrinthe[x+1][y]:
                     if labyrinthe[x-1][y]<labyrinthe[x+1][y]:
-                        
                         labyrinthe[x][y]=labyrinthe[x+1][y]
                         variableTemporaire=labyrinthe[x-1][y]
-                        for i in range(0,longueurLabyrinthe):
-                            for j in range (0,longueurLabyrinthe):
+                        for i in range(0,len(labyrinthe)):
+                            for j in range (0,len(labyrinthe[i])):
                                 if labyrinthe[i][j]==variableTemporaire:
                                     labyrinthe[i][j]=labyrinthe[x+1][y]
                     else:
                         labyrinthe[x][y]=labyrinthe[x-1][y]
                         variableTemporaire=labyrinthe[x+1][y]
-                        for i in range(0,longueurLabyrinthe):
-                            for j in range (0,longueurLabyrinthe):
+                        for i in range(0,len(labyrinthe)):
+                            for j in range (0,len(labyrinthe[i])):
                                 if labyrinthe[i][j]==variableTemporaire:
                                     labyrinthe[i][j]=labyrinthe[x-1][y]
                 else:
-                    self.tour()
+                    self.tour(longueurLabyrinthe)
         
             else:
                 if labyrinthe[x][y-1]!=labyrinthe[x][y+1]:
                     if labyrinthe[x][y-1]<labyrinthe[x][y+1]:
-                        
                         labyrinthe[x][y]=labyrinthe[x][y+1]
                         variableTemporaire=labyrinthe[x][y-1]
-                        for i in range(0,longueurLabyrinthe):
-                            for j in range (0,longueurLabyrinthe):
+                        for i in range(0,len(labyrinthe)):
+                            for j in range (0,len(labyrinthe[i])):
                                 if labyrinthe[i][j]==variableTemporaire:
                                     labyrinthe[i][j]=labyrinthe[x][y+1]
                     else:
                         labyrinthe[x][y]=labyrinthe[x][y-1]
                         variableTemporaire=labyrinthe[x][y+1]
-                        for i in range(0,longueurLabyrinthe):
-                            for j in range (0,longueurLabyrinthe):
+                        for i in range(0,len(labyrinthe)):
+                            for j in range (0,len(labyrinthe[i])):
                                 if labyrinthe[i][j]==variableTemporaire:
                                     labyrinthe[i][j]=labyrinthe[x][y-1]
                 else:
-                    self.tour()
-            
+                    self.tour(longueurLabyrinthe)
+         
+        
         self.liste=[]
         for x in range(len(self._tableau)):
             for y in range(len(self._tableau)):
@@ -380,7 +275,7 @@ class Jeu:
                         break
         
         return labyrinthe
-     
+    """
     def cassageMur(self,z,longueurLabyrinthe=25):
         
         labyrinthe=self._tableau
@@ -402,7 +297,7 @@ class Jeu:
                 self._tableau=labyrinthe
                 self.AffichageTableau()
             
-        
+    """   
     #compte et affiche le nombre de tours
     def compteur(self,x):
             self.frameCompteur.destroy()
@@ -427,7 +322,9 @@ class Jeu:
         else:
             self.Pause.configure(image=self.img5)#sinon le logo pause
             
-         
+    def Finir(self):
+        self.fini=True
+    
     #quitte la fenêtre jeu et nous renvoie à la fenêtre menu
     def quitter(self):
         self.jeu.destroy()
