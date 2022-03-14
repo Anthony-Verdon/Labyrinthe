@@ -2,7 +2,7 @@ import time
 import tkinter
 from PIL import ImageTk, Image
 from labyrintheCreation import Labyrinthe
-from couleur import couleur
+from couleur import couleur,couleurResolution
 import random
 from math import inf
 #classe menu, se charge de la page menu
@@ -103,7 +103,7 @@ class Menu:
                 JeuVie.lancerJeu(int(self.NbLongueur)//2*2+1,float(self.DelaiSec))#lance le jeu avec les informations de l'utilisateur
         
         
-        except AttributeError:#si attribut non conforme, on envoie une erreur
+        except IndexError:#si attribut non conforme, on envoie une erreur
             print("problème d'attribut")
             self.Erreur()   
             
@@ -165,7 +165,7 @@ class Jeu:
         
         self.dico[self._tableau[1][0]]=self.dico[self._tableau[1][0]]
         self.dico[self._tableau[len(self._tableau[x])-2][len(self._tableau[x])-1]]=self.dico[self._tableau[len(self._tableau[x])-2][len(self._tableau[x])-2]]
-        self.dico[1]="silver"
+        self.dico[1]="white"
         
         self.liste=[]
         x=0
@@ -214,8 +214,16 @@ class Jeu:
                 else:
                     self.tableauResolution[x].append(inf)
                     
+        self.dico={}
+        self.dico[-1]="white"
+        self.dico[inf]="green"
+        self.dico[1]="white"
         self.resolutionLabyrinthe(longueurLabyrinthe-2,longueurLabyrinthe-1,0) 
-        #self.tableauVraiResolution(1,0)
+        self.AffichageTableau()
+        
+        self.resolutionVraiLabyrinthe(1,0)#(0,0)
+        #self.AffichageTableau()
+        
         self.jeu.mainloop()
     
     #affiche le tableau 
@@ -349,10 +357,16 @@ class Jeu:
         self.fini=True
     
     def resolutionLabyrinthe(self,coordonneeX,coordonneeY,nombre):
+        if nombre in self.dico:
+            pass
+        else:
+            self.dico[nombre]=couleurResolution(nombre*10)
+            
         liste=[]
         if (coordonneeX,coordonneeY)==(1,0):
             self.tableauResolution[coordonneeX][coordonneeY]=nombre
-            return self.tableauResolution
+            self._tableau=self.tableauResolution
+            return self._tableau
         else:
             if self.tableauResolution[coordonneeX][coordonneeY]>nombre:
                 self.tableauResolution[coordonneeX][coordonneeY]=nombre
@@ -380,19 +394,32 @@ class Jeu:
                 
     def resolutionVraiLabyrinthe(self,coordonneeX,coordonneeY):
         liste=[]
-        
-        if (coordonneeX,coordonneeY)==(1,0):
-                return self.resolutionVraiLabyrinthe(coordonneeX,coordonneeY+1)
-                    
+        self.tableauResolution[coordonneeX][coordonneeY]=inf
+        if (coordonneeX,coordonneeY)==(len(self.tableauResolution)-2,len(self.tableauResolution)-1):
+            
+            return 0
+       
         if self.tableauResolution[coordonneeX+1][coordonneeY]!=-1:
-                        liste.append(self.resolutionVraiLabyrinthe(coordonneeX+1,coordonneeY))
+            print(1)
+            liste.append([self.tableauResolution[coordonneeX+1][coordonneeY],coordonneeX+1,coordonneeY])
         if self.tableauResolution[coordonneeX-1][coordonneeY]!=-1:
-                        liste.append(self.resolutionVraiLabyrinthe(coordonneeX-1,coordonneeY))
+            print(2)
+            liste.append([self.tableauResolution[coordonneeX-1][coordonneeY],coordonneeX-1,coordonneeY])
         if self.tableauResolution[coordonneeX][coordonneeY+1]!=-1:
-                        liste.append( self.resolutionVraiLabyrinthe(coordonneeX,coordonneeY+1))
+            print(3)
+            liste.append([self.tableauResolution[coordonneeX][coordonneeY+1],coordonneeX+1,coordonneeY+1])
         if self.tableauResolution[coordonneeX][coordonneeY -1]!=-1:
-                        liste.append( self.resolutionVraiLabyrinthe(coordonneeX,coordonneeY-1))
-        return min(liste)
+            print(4)
+            liste.append([self.tableauResolution[coordonneeX][coordonneeY-1],coordonneeX,coordonneeY-1])
+          
+        Minimum=inf
+        for x in range(len(liste)):
+            if liste[x][0]<Minimum:
+                Mimimum=x
+            
+        print(Minimum,(coordonneeX,coordonneeY),(len(self.tableauResolution)-2,len(self.tableauResolution)-1))
+        return self.resolutionVraiLabyrinthe(liste[Mimimum][1],liste[Mimimum][2])
+        
                 
         
         
