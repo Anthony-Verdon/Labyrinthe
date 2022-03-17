@@ -223,7 +223,7 @@ class Jeu:
         
         self.resolutionVraiLabyrinthe(1,0)#(0,0)
         self.AffichageTableau()
-        print("stop")
+        
         self.jeu.mainloop()
     
     #affiche le tableau 
@@ -360,8 +360,7 @@ class Jeu:
         if nombre in self.dico:
             pass
         else:
-            self.dico[nombre]=couleurResolution(nombre*10)
-            
+            self.dico[nombre]=couleurResolution(nombre*10)  
         liste=[]
         if (coordonneeX,coordonneeY)==(1,0):
             self.tableauResolution[coordonneeX][coordonneeY]=nombre
@@ -395,10 +394,9 @@ class Jeu:
     def resolutionVraiLabyrinthe(self,coordonneeX,coordonneeY):
         liste=[]
         self.tableauResolution[coordonneeX][coordonneeY]=inf
+        self.AffichageTableau()
         if (coordonneeX,coordonneeY)==(len(self.tableauResolution)-2,len(self.tableauResolution)-1):
-        
             return 0
-        print(coordonneeX,coordonneeY)
         if self.tableauResolution[coordonneeX+1][coordonneeY]!=-1:
             liste.append([self.tableauResolution[coordonneeX+1][coordonneeY],coordonneeX+1,coordonneeY])
         if self.tableauResolution[coordonneeX-1][coordonneeY]!=-1:
