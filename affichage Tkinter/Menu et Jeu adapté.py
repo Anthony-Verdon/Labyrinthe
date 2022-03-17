@@ -103,7 +103,7 @@ class Menu:
                 JeuVie.lancerJeu(int(self.NbLongueur)//2*2+1,float(self.DelaiSec))#lance le jeu avec les informations de l'utilisateur
         
         
-        except IndexError:#si attribut non conforme, on envoie une erreur
+        except AttributeError:#si attribut non conforme, on envoie une erreur
             print("problème d'attribut")
             self.Erreur()   
             
@@ -217,13 +217,13 @@ class Jeu:
         self.dico={}
         self.dico[-1]="white"
         self.dico[inf]="green"
-        self.dico[1]="white"
-        self.resolutionLabyrinthe(longueurLabyrinthe-2,longueurLabyrinthe-1,0) 
+        self.dico[1]="black"
+        self.resolutionLabyrinthe(longueurLabyrinthe-2,longueurLabyrinthe-1,0) #fonctionne
         self.AffichageTableau()
         
         self.resolutionVraiLabyrinthe(1,0)#(0,0)
-        #self.AffichageTableau()
-        
+        self.AffichageTableau()
+        print("stop")
         self.jeu.mainloop()
     
     #affiche le tableau 
@@ -396,29 +396,28 @@ class Jeu:
         liste=[]
         self.tableauResolution[coordonneeX][coordonneeY]=inf
         if (coordonneeX,coordonneeY)==(len(self.tableauResolution)-2,len(self.tableauResolution)-1):
-            
+        
             return 0
-       
+        print(coordonneeX,coordonneeY)
         if self.tableauResolution[coordonneeX+1][coordonneeY]!=-1:
-            print(1)
             liste.append([self.tableauResolution[coordonneeX+1][coordonneeY],coordonneeX+1,coordonneeY])
         if self.tableauResolution[coordonneeX-1][coordonneeY]!=-1:
-            print(2)
             liste.append([self.tableauResolution[coordonneeX-1][coordonneeY],coordonneeX-1,coordonneeY])
         if self.tableauResolution[coordonneeX][coordonneeY+1]!=-1:
-            print(3)
-            liste.append([self.tableauResolution[coordonneeX][coordonneeY+1],coordonneeX+1,coordonneeY+1])
+            liste.append([self.tableauResolution[coordonneeX][coordonneeY+1],coordonneeX,coordonneeY+1])
         if self.tableauResolution[coordonneeX][coordonneeY -1]!=-1:
-            print(4)
             liste.append([self.tableauResolution[coordonneeX][coordonneeY-1],coordonneeX,coordonneeY-1])
-          
+            
+        if len(liste)==0:
+            return 0
+        
         Minimum=inf
         for x in range(len(liste)):
             if liste[x][0]<Minimum:
-                Mimimum=x
-            
-        print(Minimum,(coordonneeX,coordonneeY),(len(self.tableauResolution)-2,len(self.tableauResolution)-1))
-        return self.resolutionVraiLabyrinthe(liste[Mimimum][1],liste[Mimimum][2])
+                Minimum=liste[x][0]
+                position=x
+
+        return self.resolutionVraiLabyrinthe(liste[position][1],liste[position][2])
         
                 
         
