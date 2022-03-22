@@ -361,8 +361,8 @@ class Jeu:
             while self.nbPause%2==1:
                 self.jeu.update()
                 
-        print(self.start)
-        self.dico[nombre]=self.start=couleurResolution(nombre,len(self._tableau))  
+       
+        self.dico[nombre]=self.start=couleurResolution(nombre*10,len(self._tableau))  
         self.dico[-1]="white"
         self.dico[inf]="black"
         

@@ -73,8 +73,40 @@ def couleur(a):#on prend notre nombre
     codeHexa=R+G+B
     return "#"+codeHexa.upper()
 
-def couleurResolution(a):#on prend notre nombre
+stop=[]
+def couleurResolution(a,coeff):#on prend notre nombre
+    """
+    a=list(str(a))
+    a.pop(0)
+    a = ''.join(str(elem)for elem in a)
+    start=int(conversion.decimal(a,16))
     
+    if start>int(conversion.decimal("0000ff",16)) and not("a"  in stop):
+        print("a")
+        start-=256
+        if start==int(conversion.decimal("0000ff",16)):
+            stop.append("a")
+    elif start<int(conversion.decimal("ff00ff",16)) and not("b"  in stop):
+        print("b")
+        start+=65536
+        if start==int(conversion.decimal("ff00ff",16)):
+            stop.append("b")
+    elif start>int(conversion.decimal("ff0000",16)) and not("c"  in stop):
+        print("c")
+        start-=15
+        if start==int(conversion.decimal("ff0000",16)):
+            stop.append("c")
+    elif start<int(conversion.decimal("ffff00",16)) and not("d"  in stop):
+        print("d")
+        start+=256
+        if start==int(conversion.decimal("ffff00",16)):
+            stop.append("d")
+            
+    codeHexa=list(conversion.convertisseur(start))
+    while len(codeHexa)!=6:
+        codeHexa.insert(0,'0')
+    codeHexa = ''.join(str(elem)for elem in codeHexa)
+    """
     a=list(str(a))#on le met en str puis en list
     if len(a)<9:
         while len(a)<9:#on rajoute des 0 avant le nombre pour qu'il soit sur 9 chiffres
@@ -140,7 +172,27 @@ def couleurResolution(a):#on prend notre nombre
     while len(B)!=2:
         B.insert(0,'0')
     B = ''.join(str(elem)for elem in B)
-    
     codeHexa=R+G+B
+    
+    """
+    RGB=[0,255,255]
+    nombre=a
+    nombre=nombre*5
+    if (RGB[1]-nombre)<0:
+        if RGB[0]+((RGB[1]-nombre)**2)**0.5>255:
+            if RGB[2]- RGB[0]+((RGB[1]-nombre)**2)**0.5<0:
+                RGB[1]+((RGB[2]- RGB[0]+((RGB[1]-nombre)**2)**0.5)**2)**0.5
+            else:
+                RGB[2]-=RGB[0]+((RGB[1]-nombre)**2)**0.5
+            
+        else:
+            RGB[0]+=((RGB[1]-nombre)**2)**0.5
+
+    else:
+        RGB[1]-=nombre*50
+        
+    print(RGB)
+    codeHexa=str(RGB[0])+str(RGB[1])+str(RGB[2])
+    """
     return "#"+codeHexa.upper()
 

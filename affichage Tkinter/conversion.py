@@ -39,3 +39,47 @@ def convertisseur(nombreAconvertir):
     return reponse
 
 
+def decimal (nombreAconvertir,baseDuNombre):
+    
+    """
+    ce programme permet de convertir un nombre de n'importe qu'elle base en base 10. 
+    Si vous utilisez une base supérieur à  la base 10,
+    mettez des "" lorsque vous écrivez le nombre à convertir.
+    -----------------
+    paramètre : 
+        nombreAconvertir : un int 
+        baseDuNombre : un int 
+    -----------------
+    renvoie le nombre initial et sa base, et sa valeur en base 10
+    """
+    
+    compteur=x=puissance=résultat=0
+    nombreCaractère=len(str(nombreAconvertir))#compte le nombre de caractère du nombre
+    liste=list(str(nombreAconvertir))#transforme un nombre compact en liste
+    liste.reverse()#inverse les valeurs de la liste
+    
+    if baseDuNombre>10:
+        while compteur!=nombreCaractère:
+            if liste[x].lower()=="a":
+                liste[x]=10
+            elif liste[x].lower()=="b":
+                liste[x]=11
+            elif liste[x].lower()=="c":
+                liste[x]=12
+            elif liste[x].lower()=="d":
+                liste[x]=13
+            elif liste[x].lower()=="e":
+                liste[x]=14
+            elif str(liste[x]).lower()=="f":
+                liste[x]=15
+            compteur=compteur+1
+            x=x+1
+
+    compteur=x=0
+    
+    while compteur!=nombreCaractère:
+        résultat=résultat+int(liste[x])*baseDuNombre**puissance
+        compteur=compteur+1
+        x=x+1
+        puissance=puissance+1
+    return résultat
