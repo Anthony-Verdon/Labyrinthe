@@ -2,7 +2,8 @@ import time
 import tkinter
 from PIL import ImageTk, Image
 from labyrintheCreation import Labyrinthe
-from couleur import couleur,couleurResolution
+from couleur import couleur,changementCouleur
+from conversion import convertisseur
 import random
 from math import inf
 #classe menu, se charge de la page menu
@@ -103,8 +104,8 @@ class Menu:
                 JeuVie.lancerJeu(int(self.NbLongueur)//2*2+1,float(self.DelaiSec))#lance le jeu avec les informations de l'utilisateur
         
         
-        except AttributeError:#si attribut non conforme, on envoie une erreur
-            print("problème d'attribut")
+        except UnboundLocalError:#si attribut non conforme, on envoie une erreur
+            print("problème attribut location, relancer")
             self.Erreur()   
             
         
@@ -133,7 +134,7 @@ class Jeu:
         self.frameCompteur=tkinter.Frame(self.jeu)
         self.bouton=tkinter.Button(self.jeu,text="revenir au menu",font=("Kokonor",20),bg="#EB9F1B",command=self.quitter) 
         
-        self.start=65535
+        self.start=[0,255,255]
     #gère l'affichage de la page jeu
     def lancerJeu(self,longueurLabyrinthe,delai):
         
@@ -215,10 +216,12 @@ class Jeu:
                     self.tableauResolution[x].append(-1)
                 else:
                     self.tableauResolution[x].append(inf)
-            
+        self.dico={}
+        self.longueurLabyrinthe=longueurLabyrinthe
         self.resolutionLabyrinthe(longueurLabyrinthe-2,longueurLabyrinthe-1,1) #fonctionne
         
         self.resolutionVraiLabyrinthe(1,0)#(0,0)
+        
         self.AffichageTableau()
         
         self.jeu.mainloop()
@@ -236,6 +239,7 @@ class Jeu:
             tabFrame.append(tkinter.Frame(self.bigframe))
             tabFrame[x].pack()
             for y in range(len(self._tableau[x])):
+                
                 Couleur=self.dico[self._tableau[x][y]]
                 label_title=tkinter.Label(tabFrame[x],text="11",font=("Courrier",5),bg=Couleur,fg=Couleur)
                 label_title.pack(side="left")#pour que cela s'affiche en ligne
@@ -360,9 +364,11 @@ class Jeu:
         if self.nbPause%2==1:#si la variable%2 == 1, on met en pause tant que c'est égal à 1
             while self.nbPause%2==1:
                 self.jeu.update()
-                
-       
-        self.dico[nombre]=self.start=couleurResolution(nombre*10,len(self._tableau))  
+        
+        self.start=changementCouleur(self.start,self.longueurLabyrinthe)
+        
+        if not(nombre in self.dico):
+            self.dico[nombre]="#"+(str(convertisseur(self.start[0])+convertisseur(self.start[1])+convertisseur(self.start[2])))
         self.dico[-1]="white"
         self.dico[inf]="black"
         

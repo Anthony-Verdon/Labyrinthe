@@ -34,6 +34,8 @@ def convertisseur(nombreAconvertir):
         nombre=nombre//16
     
     resultat.reverse()
+    while len(resultat)<2:
+        resultat.insert(0,"0")
     reponse = ''.join(str(elem)for elem in resultat)#permet de transformer la liste en texte compact
     
     return reponse
