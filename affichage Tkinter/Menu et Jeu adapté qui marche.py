@@ -37,6 +37,8 @@ class Menu:
         panel4 = tkinter.Button(self.menu, image = img4,bg="#EB9F1B",command=self.PointInterrogation)#créer un bouton à partir de l'image 
         panel4.place(x=1325,y=25)#place le bouton à des coordonnées précises
         
+        label_title=tkinter.Label(self.menu,text="création et résolution de labyrinthe",font=("Kokonor",40),bg="#EB9F1B",fg="black")
+        label_title.place(x=500,y=150)
         self.frameImage.place(x=725,y=300)#affiche et centre la frame image
         
         self.InputLongueur=tkinter.Entry(self.frameInput,font=("Kokonor",20))#créer un input 
